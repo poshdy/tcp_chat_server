@@ -24,7 +24,7 @@ def broadcast(message):
 def manage_client(client):
     while True:
         try:
-            message = client.recv()
+            message = client.recv(1024)
             broadcast(message)
         except:
             client_index = clients.index(client)
@@ -39,9 +39,9 @@ def manage_client(client):
 def receive_connections():
     while True:
         client, add = server.accept()
-        print(f"connected with {str(add)}")
+        print(f"connected with {str(add)}!")
         client.send("user_name".encode("utf-8"))
-        user_name = client.recv().decode("utf-8")
+        user_name = client.recv(1024).decode("utf-8")
 
         user_names.append(user_name)
         clients.append(client)
@@ -50,9 +50,10 @@ def receive_connections():
         broadcast(f"{user_name} Joined!".encode("utf-8"))
         client.send("connected to the server".encode("utf-8"))
 
-        thread = threading.Thread(target=manage_client, args=(client))
+        thread = threading.Thread(target=manage_client, args=(client,))
 
         thread.start()
 
 
+print("Server is listening..")
 receive_connections()
